@@ -1,0 +1,180 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>pactera.com.icrm.saas</groupId>
+	<version>0.0.1</version>
+	<name>${project.artifactId}</name>
+	<description>mapping driver</description>
+	<inceptionYear>2010</inceptionYear>
+	<licenses>
+		<license>
+			<name>My License</name>
+			<url>http://....</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<properties>
+		<maven.compiler.source>1.5</maven.compiler.source>
+		<maven.compiler.target>1.5</maven.compiler.target>
+		<encoding>UTF-8</encoding>
+		<scala.version>2.11.5</scala.version>
+		<version.logback>1.1.7</version.logback>
+		<version.slf4j>1.7.20</version.slf4j>
+	</properties>
+
+	<!-- <repositories> <repository> <id>scala-tools.org</id> <name>Scala-Tools 
+		Maven2 Repository</name> <url>http://scala-tools.org/repo-releases</url> 
+		</repository> </repositories> <pluginRepositories> <pluginRepository> <id>scala-tools.org</id> 
+		<name>Scala-Tools Maven2 Repository</name> <url>http://scala-tools.org/repo-releases</url> 
+		</pluginRepository> </pluginRepositories> -->
+	<dependencies>
+
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>${version.logback}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${version.slf4j}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>log4j-over-slf4j</artifactId>
+			<version>${version.slf4j}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.scala-lang</groupId>
+			<artifactId>scala-library</artifactId>
+			<version>${scala.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- Spark dependency -->
+		<dependency>
+			<groupId>org.apache.spark</groupId>
+			<artifactId>spark-core_2.11</artifactId>
+			<version>2.0.2</version>
+			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>log4j</groupId>
+					<artifactId>log4j</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-log4j12</artifactId>
+				</exclusion>
+				<exclusion>
+					<artifactId>slf4j-api</artifactId>
+					<groupId>org.slf4j</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.spark</groupId>
+			<artifactId>spark-catalyst_2.11</artifactId>
+			<version>2.0.2</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.spark</groupId>
+			<artifactId>spark-streaming_2.11</artifactId>
+			<version>2.0.2</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.spark</groupId>
+			<artifactId>spark-sql_2.11</artifactId>
+			<scope>provided</scope>
+			<version>2.0.2</version>
+
+		</dependency>
+		<dependency>
+			<groupId>org.scalikejdbc</groupId>
+			<artifactId>scalikejdbc_2.11</artifactId>
+			<version>2.5.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.scalikejdbc</groupId>
+			<artifactId>scalikejdbc-config_2.11</artifactId>
+			<version>2.5.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.1.38</version>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<sourceDirectory>src/main/scala</sourceDirectory>
+		<testSourceDirectory>src/test/scala</testSourceDirectory>
+		<resources>
+			<resource>
+				<targetPath>.</targetPath>
+				<filtering>false</filtering>
+				<directory>src/main/scala</directory>
+				<includes>
+					<include>application.conf</include>
+					<include>logback.xml</include>
+				</includes>
+				<excludes>
+					<exclude></exclude>
+				</excludes>
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<groupId>org.scala-tools</groupId>
+				<artifactId>maven-scala-plugin</artifactId>
+				<version>2.15.0</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>compile</goal>
+							<goal>testCompile</goal>
+						</goals>
+						<configuration>
+							<args>
+								<arg>-dependencyfile</arg>
+								<arg>${project.build.directory}/.scala_dependencies</arg>
+							</args>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>1.4</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<transformers>
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<mainClass>com.pactera.icrm.saas.dp.driver.MapDriver</mainClass>
+								</transformer>
+							</transformers>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+	<artifactId>index-dp</artifactId>
+</project>
